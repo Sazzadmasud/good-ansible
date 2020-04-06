@@ -1,0 +1,62 @@
+---
+- name: Repo Config 
+  hosts: all
+  become: true
+  roles: 
+    - enable_repos 
+
+- name: Configuring Frontend Servers
+  hosts: frontends
+  become: true
+  roles:
+    - frontends
+
+- name: Deploy Tomcat 
+  hosts: apps
+  become: true
+  roles:
+    - tomcat
+
+- name: copy app1 index file
+  hosts: app1
+  become: true
+  tasks: 
+  - name: Copy index file to app1
+    template:
+      src: ./index.html.app1
+      dest: /usr/share/tomcat/webapps/ansible/index.html
+    notify:
+      - restart tomcat
+  handlers:
+  - name: restart tomcat 
+    service:
+      name: tomcat
+      state: restarted
+
+- name: copy app1 index file
+  hosts: app2
+  become: true
+  tasks:
+  - name: copy index file to app2
+    template:
+      src: index.html.app2
+      dest: /usr/share/tomcat/webapps/ansible/index.html
+    notify: 
+      - restart tomcat
+  handlers:
+  - name: restart tomcat
+    service:
+      name: tomcat
+      state: restarted
+
+- name: Deploy Postgress
+  hosts: appdbs
+  become: true
+  roles:
+    - deploy-postgres
+
+- name: install httpd
+  hosts: apps
+  become: true
+  roles:
+    - install-apache

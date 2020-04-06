@@ -1,0 +1,27 @@
+---
+# tasks file for roles/frontends
+- name: Install {{ packages }}
+  yum: 
+    name: "{{ packages }}"
+    state: latest
+
+- name: enable haproxy
+  service: 
+    name: haproxy
+    enabled: yes
+
+- name: start haproxy
+  service: 
+    name: haproxy
+    state: started
+
+- name: confgure haproxy
+  template:
+    src: haproxy.cfg.j2
+    dest: /etc/haproxy/haproxy.cfg
+
+- name: restart haproxy
+  service: 
+    name: haproxy
+    state: restarted
+
