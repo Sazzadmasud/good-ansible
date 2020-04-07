@@ -3,3 +3,5 @@
 packages:
   - haproxy
   - python2-httpie
+
+GUID: 8162
